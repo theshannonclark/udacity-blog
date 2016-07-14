@@ -18,6 +18,7 @@ import webapp2
 
 from app.views import *
 
-app = webapp2.WSGIApplication([('/', MainHandler),
-                               ('/auth', AuthHandler)],
-                               debug=True)
+app = webapp2.WSGIApplication([
+	('/', MainHandler),
+	('/auth', AuthHandler)
+], debug=True)
