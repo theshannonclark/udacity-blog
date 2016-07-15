@@ -19,6 +19,9 @@ import webapp2
 from app.views import *
 
 app = webapp2.WSGIApplication([
-	('/', MainHandler),
-	('/auth', AuthHandler)
+	("/", MainHandler),
+	("/auth", AuthHandler),
+	("/([0-9]*)", PostHandler),
+	("/newpost", NewPostHandler),
+	("/welcome", WelcomeHandler)
 ], debug=True)

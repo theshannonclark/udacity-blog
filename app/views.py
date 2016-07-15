@@ -1,32 +1,63 @@
-import os
-
-import jinja2
 import webapp2
 
+from google.appengine.ext import db
 from models import *
+from templates import *
 
-template_dir = os.path.join(os.path.dirname(__file__), "..", "templates")
-jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir))
 
-# Base handler class from Udacity Intro to Backend course
-class Handler(webapp2.RequestHandler):
-    def write(self, *a, **kw):
-        self.response.out.write(*a, **kw)
+# Handler class for the home page
 
-    def render_str(self, template, **params):
-        template = jinja_env.get_template(template)
-        return template.render(params)
-
-    def render(self, template, **kw):
-        self.write(self.render_str(template, **kw))
-
-class MainHandler(Handler):
+class MainHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.write('Hello, world!')
+        posts = Post.all().order('-created')
+        render(self.response, "front.html", posts = posts)
 
-class AuthHandler(Handler):
+# Handler class for the login/signup page
+
+class AuthHandler(webapp2.RequestHandler):
     def get(self):
         self.response.write('<form method="post"><input type="submit"/></form>')
 
     def post(self):
         self.response.write('Authentication request received')
+
+# Handler class for the post permalink page
+
+class PostHandler(webapp2.RequestHandler):
+    def get(self, post_id):
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
+
+        if not post:
+            self.error(404)
+            return
+
+        render(self.response, "permalink.html", post = post)
+
+# Handler class for adding a new blog post
+
+class NewPostHandler(webapp2.RequestHandler):
+    def get(self):
+        render(self.response, "newpost.html")
+
+    def post(self):
+        subject = self.request.get('subject')
+        content = self.request.get('content')
+
+        if subject and content:
+            p = Post(parent = blog_key(), subject = subject, content = content)
+            p.put()
+            self.redirect("/%s" % str(p.key().id()))
+        else:
+            error = "Subject and content, please!"
+            render(self.response, "newpost.html", subject = subject, content = content, error = error)
+
+# Handler class for the welcome page
+
+class WelcomeHandler(webapp2.RequestHandler):
+    def get(self):
+        username = self.request.get("username")
+        if valid_username(username):
+            render(self.response, "welcome.html", username = username)
+        else:
+            self.redirect("/signup")
