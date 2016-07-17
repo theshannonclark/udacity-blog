@@ -21,6 +21,7 @@ from app.views import *
 app = webapp2.WSGIApplication([
 	("/", MainHandler),
 	("/auth", AuthHandler),
+	("/logout", LogoutHandler),
 	("/([0-9]*)", PostHandler),
 	("/newpost", NewPostHandler),
 	("/welcome", WelcomeHandler)
