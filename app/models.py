@@ -1,3 +1,5 @@
+import logging
+
 from google.appengine.ext import db
 
 from templates import *
@@ -32,6 +34,7 @@ class User(db.Model):
     @classmethod
     def by_name(cls, name):
         u = User.all().filter("name = ", name).get()
+        return u
 
     @classmethod
     def register(cls, name, pw, email = None):
@@ -46,5 +49,5 @@ class User(db.Model):
     @classmethod
     def login(cls, name, pw):
         u = cls.by_name(name)
-        if u and valid_pw(name, pw, u.pw_hash):
+        if u and valid_password(name, pw, u.pw_hash):
             return u
