@@ -46,6 +46,7 @@ class AuthHandler(Handler):
 
     def post(self):
         have_error = False
+        # Register user
         if self.request.get('password-verify'):
             self.username = self.request.get("username")
             self.password = self.request.get("password")
@@ -58,11 +59,26 @@ class AuthHandler(Handler):
             # validate user input
 
             if have_error:
-                render("auth.html", **params)
+                render(self.response, "auth.html", **params)
             else:
                 self.register()
+        # Log in user
         else:
-            pass # log in user
+            self.username = self.request.get("login-name")
+            self.password = self.request.get("login-password")
+
+            # validate user input
+
+            if have_error:
+                render(self.response, "auth.html", login_name = self.username)
+            else:
+                user = User.login(self.username, self.password)
+                if user:
+                    self.login(user)
+                    self.redirect("/")
+                else:
+                    msg = "Incorrect user name or password"
+                    render(self.response, "auth.html", login_name = self.username, error_login=msg)
 
     def register(self):
         u = User.by_name(self.username)
@@ -74,7 +90,7 @@ class AuthHandler(Handler):
             u.put()
 
             self.login(u)
-            self.redirect("/welcome")
+            self.redirect("/")
 
 # Handler for log out page
 
