@@ -1,20 +1,21 @@
+import os
 import random
 import hashlib
 import hmac
-from string import letters
 
-secret = "secret"
+
+secret = "'KT?|S$)[XtoD|&efbpWBV4-mw59x}QwWVt9Pa7u01c&~<&A`)~)2M]-FJ8A5-ja*');"
 
 def make_secure_val(val):
     return "%s|%s" % (val, hmac.new(secret, val).hexdigest())
 
 def check_secure_val(secure_val):
     val = secure_val.split("|")[0]
-    if secure_val == make_secure_val(val):
+    if hmac.compare_digest(secure_val, make_secure_val(val)):
         return val
 
-def make_salt(length = 5):
-    return ''.join(random.choice(letters) for x in xrange(length))
+def make_salt(length = 16):
+    return os.urandom(length)
 
 def make_pw_hash(name, pw, salt = None):
     if not salt:
@@ -24,4 +25,4 @@ def make_pw_hash(name, pw, salt = None):
 
 def valid_password(name, password, h):
     salt = h.split(",")[0]
-    return h == make_pw_hash(name, password, salt)
+    return make_pw_hash(name, password, salt) == h
