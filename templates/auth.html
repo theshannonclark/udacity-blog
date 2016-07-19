@@ -6,16 +6,16 @@
 
 <form method="post">
   <label for="username">User name: </label>
-  <input type="text" name="username"/>
+  <input type="text" id="username" name="username" value="{{username}}"/>
 
-  <label for="username">Password: </label>
-  <input type="password" name="password"/>
+  <label for="password">Password: </label>
+  <input type="password" id="password" name="password"/>
 
-  <label for="username">Verify password:</label>
-  <input type="password" name="password-verify"/>
+  <label for="verify">Verify password:</label>
+  <input type="password" id="verify" name="password-verify"/>
 
-  <label for="username">Email (optional): </label>
-  <input type="text" name="email"/>
+  <label for="email">Email (optional): </label>
+  <input type="text" id="email" name="email" value="{{email}}"/>
 
   <input type="submit" value="post"/>
 </form>
@@ -23,11 +23,13 @@
 <h1>Log in</h1>
 
 <form method="post">
-  <label for="username">User name: </label>
-  <input type="text" name="username"/>
+  <label for="login-name">User name: </label>
+  <input type="text" id="login-name" name="login-name" value="{{login_name}}"/>
 
-  <label for="username">Password: </label>
-  <input type="password" name="password"/>
+  <label for="login-password">Password: </label>
+  <input type="password" id="login-password" name="login-password"/>
+
+  <p>{{error_login}}</p>
 
   <input type="submit" value="post"/>
 </form>
