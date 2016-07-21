@@ -39,7 +39,7 @@ class Handler(webapp2.RequestHandler):
 class MainHandler(Handler):
     def get(self):
         posts = Post.all().order('-created')
-        render(self.response, "front.html", posts = posts)
+        render(self.response, "front.html", posts = posts, user = self.user)
 
 # Handler class for the login/signup page
 
@@ -126,11 +126,18 @@ class AuthHandler(Handler):
     def valid_email(self, email):
         return self.email_regex.match(email)
 
+    # Only logged-out users can sign up/log in
+    def initialize(self, *a, **kw):
+        super(AuthHandler, self).initialize(*a, **kw)
+        if self.user:
+            self.redirect("/")
+
 # Handler for log out page
 
 class LogoutHandler(Handler):
     def get(self):
-        self.logout()
+        if self.user:
+            self.logout()
         self.redirect("/auth")
 
 # Handler class for the post permalink page
@@ -144,32 +151,33 @@ class PostHandler(Handler):
             self.error(404)
             return
 
-        render(self.response, "permalink.html", post = post)
+        render(self.response, "permalink.html", post = post, user = self.user)
 
 # Handler class for adding a new blog post
 
 class NewPostHandler(Handler):
     def get(self):
-        render(self.response, "newpost.html")
+        render(self.response, "newpost.html", user = self.user)
 
     def post(self):
         subject = self.request.get('subject')
         content = self.request.get('content')
 
         if subject and content:
-            p = Post(parent = blog_key(), subject = subject, content = content)
+            p = Post(
+                parent = blog_key(),
+                subject = subject,
+                content = content,
+                creator = self.user
+            )
             p.put()
             self.redirect("/%s" % str(p.key().id()))
         else:
             error = "Subject and content, please!"
-            render(self.response, "newpost.html", subject = subject, content = content, error = error)
+            render(self.response, "newpost.html", subject = subject, content = content, error = error, user = self.user)
 
-# Handler class for the welcome page
-
-class WelcomeHandler(Handler):
-    def get(self):
-        username = self.request.get("username")
-        if valid_username(username):
-            render(self.response, "welcome.html", username = username)
-        else:
-            self.redirect("/signup")
+    # Only logged in users can post
+    def initialize(self, *a, **kw):
+        super(NewPostHandler, self).initialize(*a, **kw)
+        if not self.user:
+            self.redirect("/auth")

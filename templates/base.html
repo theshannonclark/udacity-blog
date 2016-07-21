@@ -9,7 +9,9 @@
 
   <body>
     <a href="/">CS 253 blog</a>
+    {% if not user %}
     <a href="/auth">Log in/sign up</a>
+    {% endif %}
 
     <div id="content">
       {% block content %}

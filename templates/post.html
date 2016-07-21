@@ -1,11 +1,11 @@
 <div class="post">
   <div class="post-heading">
     <div class="post-title">
-    	{{ p.subject }}
+    	<a href="{{ p.permalink() }}">{{ p.subject }}</a>
     </div>
 
-    <div class="post-date">
-    	{{ p.created.strftime("%b %d, %Y") }}
+    <div class="post-details">
+      Written by {{ p.creator.name }} on {{ p.created.strftime("%b %d, %Y") }}
     </div>
   </div>
 

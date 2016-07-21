@@ -12,16 +12,6 @@ def blog_key(name = 'default'):
 def users_key(group = "default"):
     return db.Key.from_path("users", group)
 
-class Post(db.Model):
-    subject = db.StringProperty(required = True)
-    content = db.TextProperty(required = True)
-    created = db.DateTimeProperty(auto_now_add = True)
-    last_modified = db.DateTimeProperty(auto_now = True)
-
-    def render(self):
-        self._render_text = self.content.replace('\n', "<br/>")
-        return render_str("post.html", p = self)
-
 class User(db.Model):
     name = db.StringProperty(required = True)
     pw_hash = db.StringProperty(required = True)
@@ -51,3 +41,17 @@ class User(db.Model):
         u = cls.by_name(name)
         if u and valid_password(name, pw, u.pw_hash):
             return u
+
+class Post(db.Model):
+    subject = db.StringProperty(required = True)
+    content = db.TextProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
+    creator = db.ReferenceProperty(User, required = True)
+    last_modified = db.DateTimeProperty(auto_now = True)
+
+    def render(self):
+        self._render_text = self.content.replace('\n', "<br/>")
+        return render_str("post.html", p = self)
+
+    def permalink(self):
+        return "/%s" % self.key().id()
