@@ -1,3 +1,5 @@
+import re
+
 import webapp2
 
 from google.appengine.ext import db
@@ -5,6 +7,7 @@ from google.appengine.ext import db
 from models import *
 from templates import *
 from auth import *
+
 
 # Base handler class
 
@@ -41,13 +44,16 @@ class MainHandler(Handler):
 # Handler class for the login/signup page
 
 class AuthHandler(Handler):
+
+    email_regex = re.compile("^[\w\d\-\.]+@[\w\d\-\.]+\.[a-z]+$")
+
     def get(self):
         render(self.response, "auth.html")
 
     def post(self):
         have_error = False
         # Register user
-        if self.request.get('password-verify'):
+        if self.request.get('form-type') == "signup":
             self.username = self.request.get("username")
             self.password = self.request.get("password")
             self.verify = self.request.get("password-verify")
@@ -58,6 +64,22 @@ class AuthHandler(Handler):
 
             # validate user input
 
+            if not (self.username and self.password and self.verify):
+                have_error = True
+                params["signup_error"] = "Something is missing..."
+
+            if not self.valid_username(self.username):
+                have_error = True
+                params["username_error"] = "Username must be letters and numbers"
+
+            if self.password != self.verify:
+                have_error = True
+                params["password_error"] = "Password and verify password must match"
+
+            if self.email and (not self.valid_email(self.email)):
+                have_error = True
+                params["email_error"] = "Email must contain an @ character, and end with a dot followed by letters"
+
             if have_error:
                 render(self.response, "auth.html", **params)
             else:
@@ -67,30 +89,42 @@ class AuthHandler(Handler):
             self.username = self.request.get("login-name")
             self.password = self.request.get("login-password")
 
+            params = dict(login_name = self.username)
+
             # validate user input
 
+            if not self.valid_username(self.username):
+                have_error = True
+                params["error_login_name"] = "Username must be letters and numbers"
+
             if have_error:
-                render(self.response, "auth.html", login_name = self.username)
+                render(self.response, "auth.html", **params)
             else:
                 user = User.login(self.username, self.password)
                 if user:
                     self.login(user)
                     self.redirect("/")
                 else:
-                    msg = "Incorrect user name or password"
-                    render(self.response, "auth.html", login_name = self.username, error_login=msg)
+                    params["error_login"] = "Incorrect user name or password"
+                    render(self.response, "auth.html", **params)
 
     def register(self):
         u = User.by_name(self.username)
         if u:
             msg = "That user already exists"
-            render("auth.html", error_username = msg)
+            render(self.response, "auth.html", username_error = msg)
         else:
             u = User.register(self.username, self.password, self.email)
             u.put()
 
             self.login(u)
             self.redirect("/")
+
+    def valid_username(self, username):
+        return username.isalnum()
+
+    def valid_email(self, email):
+        return self.email_regex.match(email)
 
 # Handler for log out page
 

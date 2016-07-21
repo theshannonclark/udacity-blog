@@ -5,17 +5,24 @@
 <h1>Sign up</h1>
 
 <form method="post">
+  <span>{{signup_error}}</span><br/>
+
   <label for="username">User name: </label>
-  <input type="text" id="username" name="username" value="{{username}}"/>
+  <input type="text" id="username" name="username" value="{{username}}" required/>
+  <span>{{username_error}}</span><br/>
 
   <label for="password">Password: </label>
-  <input type="password" id="password" name="password"/>
+  <input type="password" id="password" name="password" required/><br/>
 
   <label for="verify">Verify password:</label>
-  <input type="password" id="verify" name="password-verify"/>
+  <input type="password" id="verify" name="password-verify" required/>
+  <span>{{password_error}}</span><br/>
 
   <label for="email">Email (optional): </label>
-  <input type="text" id="email" name="email" value="{{email}}"/>
+  <input type="email" id="email" name="email" value="{{email}}"/>
+  <span>{{email_error}}</span><br/>
+
+  <input type="hidden" name="form-type" value="signup">
 
   <input type="submit" value="post"/>
 </form>
@@ -23,13 +30,16 @@
 <h1>Log in</h1>
 
 <form method="post">
+  <span>{{error_login}}</span><br/>
+
   <label for="login-name">User name: </label>
-  <input type="text" id="login-name" name="login-name" value="{{login_name}}"/>
+  <input type="text" id="login-name" name="login-name" value="{{login_name}}" required/>
+  <span>{{error_login_name}}</span><br/>
 
   <label for="login-password">Password: </label>
-  <input type="password" id="login-password" name="login-password"/>
+  <input type="password" id="login-password" name="login-password" required/><br/>
 
-  <p>{{error_login}}</p>
+  <input type="hidden" name="form-type" value="login">
 
   <input type="submit" value="post"/>
 </form>
