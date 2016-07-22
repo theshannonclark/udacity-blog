@@ -23,5 +23,7 @@ app = webapp2.WSGIApplication([
 	("/auth", AuthHandler),
 	("/logout", LogoutHandler),
 	("/([0-9]*)", PostHandler),
+	("/([0-9]*)/edit", EditPostHandler),
+	("/([0-9]*)/delete", DeletePostHandler),
 	("/newpost", NewPostHandler)
 ], debug=True)

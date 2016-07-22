@@ -11,6 +11,8 @@
     <a href="/">CS 253 blog</a>
     {% if not user %}
     <a href="/auth">Log in/sign up</a>
+    {% else %}
+    <span>{{user.name}}</span> <a href="/logout">Log out</a>
     {% endif %}
 
     <div id="content">

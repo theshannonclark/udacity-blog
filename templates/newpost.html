@@ -2,9 +2,13 @@
 
 {% block content %}
 
+<span>{{edit_error}}</span><br/>
 <form method="post">
-  <input type="text" name="subject"/>
-  <textarea name="content"></textarea>
+  <label for="subject">Subject: </label>
+  <input type="text" id="subject" name="subject" value="{{title}}" required/><br/>
+
+  <label for="content">Content: </label>
+  <textarea name="content" id="content" required>{{body}}</textarea><br/>
 
   <input type="submit" value="post"/>
 </form>

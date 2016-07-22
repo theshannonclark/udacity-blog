@@ -1,4 +1,5 @@
 import re
+import logging
 
 import webapp2
 
@@ -12,12 +13,14 @@ from auth import *
 # Base handler class
 
 class Handler(webapp2.RequestHandler):
-    def set_secure_cookie(self, name, val):
+    def set_secure_cookie(self, name, val, exp = None):
         cookie_val = make_secure_val(val)
-        self.response.headers.add_header(
-            "Set-Cookie",
-            "%s=%s; Path=/" % (name, cookie_val)
-        )
+        cookie_str = "%s=%s; Path=/" % (name, cookie_val)
+
+        if exp:
+            cookie_str = "%s=%s; expires=%s; Path=/" % (name, cookie_val, exp)
+
+        self.response.headers.add_header("Set-Cookie", cookie_str)
 
     def read_secure_cookie(self, name):
         cookie_val = self.request.cookies.get(name)
@@ -27,7 +30,9 @@ class Handler(webapp2.RequestHandler):
         self.set_secure_cookie("user_id", str(user.key().id()))
 
     def logout(self):
-        self.response.headers.add_header("Set-Cookie", "user_id=; Path=/")
+        exp_date = "Thu, 01 Jan 1970 00:00:00 UTC"
+        if self.user:
+            self.set_secure_cookie("user_id", str(self.user.key().id()), exp_date)
 
     def initialize(self, *a, **kw):
         webapp2.RequestHandler.initialize(self, *a, **kw)
@@ -148,10 +153,94 @@ class PostHandler(Handler):
         post = db.get(key)
 
         if not post:
-            self.error(404)
+            self.redirect("/")
             return
 
         render(self.response, "permalink.html", post = post, user = self.user)
+
+# Handler class for editing a blog post
+
+class EditPostHandler(Handler):
+    def get(self, post_id):
+        if not self.user:
+            self.redirect("/%s" % post_id)
+            return
+
+        key = db.Key.from_path('Post', int(post_id), parent = blog_key())
+        post = db.get(key)
+        if not post:
+            self.redirect("/")
+            return
+
+        if post.creator.name != self.user.name:
+            self.redirect("/%s" % post_id)
+            return
+
+        params = dict(title = post.subject, body = post.content, user = self.user)
+        render(self.response, "newpost.html", **params)
+
+    def post(self, post_id):
+        if not self.user:
+            self.redirect("/%s" % post_id)
+            return
+
+        key = db.Key.from_path('Post', int(post_id), parent = blog_key())
+        post = db.get(key)
+        if not post:
+            self.redirect("/")
+            return
+
+        if post.creator.name != self.user.name:
+            self.redirect("/%s" % post_id)
+            return
+
+        have_error = False
+
+        title = self.request.get("subject")
+        content = self.request.get("content")
+
+        params = dict(title = post.subject, body = post.content, user = self.user)
+
+        if not (title and content):
+            have_error = True
+            params["edit_error"] = "Subject and content required"
+
+        if not (self.valid_text(title) and self.valid_text(content)):
+            have_error = True
+            params["edit_error"] = "Text only, please"
+
+        if have_error:
+            render(self.response, "newpost.html", **params)
+        else:
+            post.subject = title
+            post.content = content
+
+            post.put()
+
+            self.redirect("/%s" % post_id)
+
+    def valid_text(self, text):
+        return re.compile("^.+$", re.DOTALL).match(text)
+
+# Handler class for deleting a blog post
+
+class DeletePostHandler(Handler):
+    def get(self, post_id):
+        if not self.user:
+            self.redirect("/%s" % post_id)
+            return
+
+        key = db.Key.from_path('Post', int(post_id), parent = blog_key())
+        post = db.get(key)
+        if not post:
+            self.redirect("/")
+            return
+
+        if post.creator.name != self.user.name:
+            self.redirect("/%s" % post_id)
+        else:
+            db.delete(post)
+            self.redirect("/")
 
 # Handler class for adding a new blog post
 
