@@ -1,0 +1,131 @@
+/* Standard boilerplate stuff */
+
+*, *:before, *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* Responsive styles */
+
+img {
+    width: 100%;
+}
+
+/* Mobile-first styles */
+
+body {
+    font-family: "Calendas Plus","Crimson Text","Hoefler Text","Georgia",serif;
+    font-size: 1.2em;
+    background: #fafafa none repeat scroll 0 0;
+    color: #3b3b3b;
+}
+
+.site-header-wrapper {
+    background: #fff none repeat scroll 0 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.site-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 2em 3em;
+    margin-bottom: 2em;
+}
+
+.title-container {
+    width: 100%;
+    margin: 2em auto;
+}
+
+.login-container {
+    width: 100%;
+}
+
+a, a:visited, a:active {
+    text-decoration: none;
+}
+
+.site-header a {
+    color: #3b3b3b;
+}
+
+.site-header a:hover,
+.post-title a {
+    color: #8ab9d1;
+}
+
+.post-title a {
+    font-style: italic;
+}
+
+.post-title a:hover {
+    color: #32657f;
+}
+
+main.content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.recent-posts {
+    width: 90%;
+    text-align: justify;
+    margin: 5%;
+}
+
+.post {
+    margin-top: 2em;
+}
+
+.recent-posts h2 {
+    font-size: 2em;
+}
+
+.post .post-details,
+.post .post-content {
+    margin-top: 0.5em;
+}
+
+.post-details {
+    color: #9e9e9e;
+    font-family: "Source Sans Pro","Open Sans","Helvetica Neue","Arial",sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: bold;
+}
+
+/* Media queries */
+
+@media screen and (min-width: 450px) {
+}
+
+@media screen and (min-width: 650px) {
+    .site-header{
+        flex-wrap: nowrap;
+    }
+
+    .title-container {
+        width: 30%;
+    }
+
+    .login-container {
+        width: 70%;
+        text-align: right;
+    }
+}
+
+@media screen and (min-width: 900px) {
+    .content,
+    .site-header {
+        width: 900px;
+        margin: 0 auto;
+    }
+}

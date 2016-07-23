@@ -1,3 +1,4 @@
+import re
 import logging
 
 from google.appengine.ext import db
@@ -49,8 +50,16 @@ class Post(db.Model):
     creator = db.ReferenceProperty(User, required = True)
     last_modified = db.DateTimeProperty(auto_now = True)
 
-    def render(self):
+    def render(self, limit = -1):
         self._render_text = self.content.replace('\n', "<br/>")
+        if limit > -1:
+            self._excerpt = self._render_text
+            break_index = self._excerpt.find("<br/>")
+            if break_index > -1:
+                self._excerpt = self._excerpt[:break_index]
+            self._excerpt = (self._excerpt[:limit]) if len(self._excerpt) > limit else self._excerpt
+            self._excerpt = self._excerpt.strip()
+            self._excerpt += "..." if not re.compile(".+\.$").match(self._excerpt) else ".."
         return render_str("post.html", p = self)
 
     def permalink(self):

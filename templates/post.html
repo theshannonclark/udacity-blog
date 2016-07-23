@@ -1,15 +1,19 @@
-<div class="post">
-  <div class="post-heading">
-    <div class="post-title">
-    	<a href="{{ p.permalink() }}">{{ p.subject }}</a>
-    </div>
+<article class="post">
+  <header class="post-heading">
+    <h3 class="post-title">
+      <a href="{{ p.permalink() }}">{{ p.subject }}</a>
+    </h3>
 
-    <div class="post-details">
-      Written by {{ p.creator.name }} on {{ p.created.strftime("%b %d, %Y") }}
-    </div>
-  </div>
+    <p class="post-details">
+      Published {{ p.created.strftime("%b %d, %Y") }} by {{ p.creator.name }} 
+    </p>
+  </header>
 
-  <div class="post-content">
-  	{{ p._render_text | safe }}
-  </div>
-</div>
+  <section class="post-content">
+    {% if p._excerpt %}
+      {{ p._excerpt | safe }}
+    {% else %}
+    	{{ p._render_text | safe }}
+    {% endif %}
+  </section>
+</article>

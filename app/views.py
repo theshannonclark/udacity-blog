@@ -1,5 +1,4 @@
 import re
-import logging
 
 import webapp2
 
@@ -43,8 +42,8 @@ class Handler(webapp2.RequestHandler):
 
 class MainHandler(Handler):
     def get(self):
-        posts = Post.all().order('-created')
-        render(self.response, "front.html", posts = posts, user = self.user)
+        posts = Post.all().order('-created').run(limit = 5)
+        render(self.response, "front.html", posts = posts, limit = 500, user = self.user)
 
 # Handler class for the login/signup page
 

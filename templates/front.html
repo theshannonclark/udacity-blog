@@ -1,8 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {% for p in posts %}
-    {{ p.render() | safe }}
-    <br/><br/>
-  {% endfor %}
+  <section class="recent-posts">
+    <h2>Recent Posts</h2>
+
+    {% for p in posts %}
+      {% if not limit %}
+        {{ p.render() | safe }}
+      {% else %}
+        {{ p.render(limit) | safe }}
+      {% endif %}
+    {% endfor %}
+  </section>
 {% endblock %}

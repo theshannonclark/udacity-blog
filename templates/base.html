@@ -5,19 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
     <title>Blog</title>
+
+    <link rel="stylesheet" href="static/css/main.css"/>
   </head>
 
   <body>
-    <a href="/">CS 253 blog</a>
-    {% if not user %}
-    <a href="/auth">Log in/sign up</a>
-    {% else %}
-    <span>{{user.name}}</span> <a href="/logout">Log out</a>
-    {% endif %}
+    <div class="site-header-wrapper">
+      <header class="site-header">
+        <div class="title-container">
+          <h1 class="site-title"><a href="/">CS 253 blog</a></h1>
+        </div>
 
-    <div id="content">
+        <div class="login-container">
+          {% if not user %}
+          <a href="/auth">Log in/sign up</a>
+          {% else %}
+          <span>{{user.name}}</span> (<a href="/logout">Log out</a>)
+          {% endif %}
+        </div>
+      </header>
+    </div>
+
+    <main class="content">
       {% block content %}
       {% endblock %}
-    </div>
+    </main>
+
+    <script src="static/js/main.js"></script>
   </body>
 </html>
