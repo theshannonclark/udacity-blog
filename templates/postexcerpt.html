@@ -5,7 +5,8 @@
     </h3>
 
     <p class="post-details">
-      Published {{ p.created.strftime("%b %d, %Y") }} by {{ p.creator.name }} 
+      Published {{ p.created.strftime("%b %d, %Y") }} 
+      by <a href="{{p.creator.profile_url()}}">{{ p.creator.name }}</a>
     </p>
   </header>
 

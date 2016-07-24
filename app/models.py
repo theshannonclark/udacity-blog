@@ -43,6 +43,9 @@ class User(db.Model):
         if u and valid_password(name, pw, u.pw_hash):
             return u
 
+    def profile_url(self):
+        return "/user/%s" % self.name
+
 class Post(db.Model):
     subject = db.StringProperty(required = True)
     content = db.TextProperty(required = True)

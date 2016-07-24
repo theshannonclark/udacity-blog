@@ -2,8 +2,9 @@
   <header class="post-heading">
     <h2 class="post-title full-post">{{ p.subject }}</a></h2>
 
-    <p class="post-details full-post">
-      Published {{ p.created.strftime("%b %d, %Y") }} by {{ p.creator.name }} 
+    <p class="post-details">
+      Published {{ p.created.strftime("%b %d, %Y") }} 
+      by <a href="{{p.creator.profile_url()}}">{{ p.creator.name }}</a>
     </p>
   </header>
 
