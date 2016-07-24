@@ -102,6 +102,7 @@ class AuthHandler(Handler):
                 params["error_login_name"] = "Username must be letters and numbers"
 
             if have_error:
+                params["login_form"] = True
                 render(self.response, "auth.html", **params)
             else:
                 user = User.login(self.username, self.password)
@@ -109,6 +110,7 @@ class AuthHandler(Handler):
                     self.login(user)
                     self.redirect("/")
                 else:
+                    params["login_form"] = True
                     params["error_login"] = "Incorrect user name or password"
                     render(self.response, "auth.html", **params)
 

@@ -102,9 +102,80 @@ main.content {
     font-weight: bold;
 }
 
+.tab-container {
+    width:90%;
+    margin: 5%;
+    padding: 5% 5% 5% 15%;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.tab-signup,
+.tab-login {
+    margin-top: 1em;
+}
+
+.tab-signup label,
+.tab-login label {
+    display: block;
+    margin: 0.5em auto;
+}
+
+.tab-signup input,
+.tab-login input {
+    margin-left: 2em;
+}
+
+.auth-button {
+    padding: 0.5em 1em;
+    margin-top: 1em;
+}
+
+.error {
+    color: tomato;
+}
+
+/* Tabs */
+
+input[type="radio"] {
+  display: none;
+}
+
+input[type="radio"] + label {
+  margin-left: 20px;
+  padding: 10px;
+}
+
+input[type="radio"]:checked + label,
+input[type="radio"] + label:hover {
+  background: #eee;
+}
+
+input[type="radio"] + label:hover {
+  cursor: pointer;
+}
+
+#signup:checked ~ div.tab-login {
+  display: none;
+}
+
+#login:checked ~ div.tab-signup {
+  display: none;
+}
+
 /* Media queries */
 
 @media screen and (min-width: 450px) {
+    .tab-signup label,
+    .tab-login label {
+        display: inline-block;
+        margin: 0.5em auto;
+    }
+
+    .tab-signup input,
+    .tab-login input {
+        margin-left: 2em;
+    }
 }
 
 @media screen and (min-width: 650px) {
@@ -119,6 +190,10 @@ main.content {
     .login-container {
         width: 70%;
         text-align: right;
+    }
+
+    .tab-container {
+        width: 650px;
     }
 }
 

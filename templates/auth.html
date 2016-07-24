@@ -2,46 +2,62 @@
 
 {% block content %}
 
-<h1>Sign up</h1>
+<div class="tab-container">
 
-<form method="post">
-  <span>{{signup_error}}</span><br/>
+  {% if not login_form %}
+    <input type="radio" name="auth" id="signup" checked>
+    <label for="signup">Sign up</label>
 
-  <label for="username">User name: </label>
-  <input type="text" id="username" name="username" value="{{username}}" required/>
-  <span>{{username_error}}</span><br/>
+    <input type="radio" name="auth" id="login">
+  {% else %}
+    <input type="radio" name="auth" id="signup">
+    <label for="signup">Sign up</label>
 
-  <label for="password">Password: </label>
-  <input type="password" id="password" name="password" required/><br/>
+    <input type="radio" name="auth" id="login" checked>
+  {% endif %}
+  <label for="login">Log in</label>
 
-  <label for="verify">Verify password:</label>
-  <input type="password" id="verify" name="password-verify" required/>
-  <span>{{password_error}}</span><br/>
+  <div class="tab-signup">
+    <form method="post">
+      <span class="error">{{signup_error}}</span><br/>
 
-  <label for="email">Email (optional): </label>
-  <input type="email" id="email" name="email" value="{{email}}"/>
-  <span>{{email_error}}</span><br/>
+      <label for="username">User name: </label>
+      <input type="text" id="username" name="username" value="{{username}}" required/>
+      <span class="error">{{username_error}}</span><br/>
 
-  <input type="hidden" name="form-type" value="signup">
+      <label for="password">Password: </label>
+      <input type="password" id="password" name="password" required/><br/>
 
-  <input type="submit" value="post"/>
-</form>
+      <label for="verify">Verify password:</label>
+      <input type="password" id="verify" name="password-verify" required/>
+      <span class="error">{{password_error}}</span><br/>
 
-<h1>Log in</h1>
+      <label for="email">Email (optional): </label>
+      <input type="email" id="email" name="email" value="{{email}}"/>
+      <span class="error">{{email_error}}</span><br/>
 
-<form method="post">
-  <span>{{error_login}}</span><br/>
+      <input type="hidden" name="form-type" value="signup">
 
-  <label for="login-name">User name: </label>
-  <input type="text" id="login-name" name="login-name" value="{{login_name}}" required/>
-  <span>{{error_login_name}}</span><br/>
+      <input type="submit" class="auth-button" value="Register"/>
+    </form>
+  </div>
 
-  <label for="login-password">Password: </label>
-  <input type="password" id="login-password" name="login-password" required/><br/>
+  <div class="tab-login">
+    <form method="post">
+      <span class="error">{{error_login}}</span><br/>
 
-  <input type="hidden" name="form-type" value="login">
+      <label for="login-name">User name: </label>
+      <input type="text" id="login-name" name="login-name" value="{{login_name}}" required/>
+      <span class="error">{{error_login_name}}</span><br/>
 
-  <input type="submit" value="post"/>
-</form>
+      <label for="login-password">Password: </label>
+      <input type="password" id="login-password" name="login-password" required/><br/>
+
+      <input type="hidden" name="form-type" value="login">
+
+      <input type="submit" class="auth-button" value="Log in"/>
+    </form>
+  </div>
+</div>
 
 {% endblock %}
