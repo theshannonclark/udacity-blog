@@ -135,6 +135,10 @@ main.content {
     color: tomato;
 }
 
+.edit-bar {
+    margin: 0.5em auto;
+}
+
 /* Tabs */
 
 input[type="radio"] {

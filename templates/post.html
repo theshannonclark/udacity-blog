@@ -10,4 +10,10 @@
   <section class="post-content full-post">
     {{ p._render_text | safe }}
   </section>
+
+  <section class="edit-bar">
+  	{% if user_name and user_name == p.creator.name %}
+  	  <p><a href="{{p.permalink()}}/edit">edit</a> | <a href="{{p.permalink()}}/delete">delete</a></p>
+  	{% endif %}
+  </section>
 </article>

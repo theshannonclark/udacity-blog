@@ -12,7 +12,7 @@ def make_secure_val(val):
 
 def check_secure_val(secure_val):
     val = secure_val.split("|")[0]
-    if hmac.compare_digest(secure_val, make_secure_val(val)):
+    if secure_val == make_secure_val(val):
         return val
 
 def make_salt(length = 16):

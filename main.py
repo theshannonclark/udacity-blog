@@ -25,5 +25,6 @@ app = webapp2.WSGIApplication([
 	("/([0-9]*)", PostHandler),
 	("/([0-9]*)/edit", EditPostHandler),
 	("/([0-9]*)/delete", DeletePostHandler),
+	("/user/([a-zA-Z0-9]+)", UserPostsHandler),
 	("/newpost", NewPostHandler)
 ], debug=True)

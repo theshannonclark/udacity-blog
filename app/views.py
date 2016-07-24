@@ -1,4 +1,5 @@
 import re
+import logging
 
 import webapp2
 
@@ -44,6 +45,19 @@ class MainHandler(Handler):
     def get(self):
         posts = Post.all().order('-created').run(limit = 5)
         render(self.response, "front.html", posts = posts, limit = 500, user = self.user)
+
+# Profile page that shows all posts published by specified user
+
+class UserPostsHandler(Handler):
+    def get(self, user_name):
+        user = User.all().filter("name = ", user_name).fetch(limit=1)
+        posts = []
+        if len(user) == 1:
+            user = user[0]
+            logging.error(user.key())
+            posts = Post.all().filter("creator =", user.key()).order('-created')
+        render(self.response, "userposts.html", posts = posts, limit = 500, user = self.user, user_name = user_name)
+
 
 # Handler class for the login/signup page
 
@@ -177,7 +191,7 @@ class EditPostHandler(Handler):
             self.redirect("/%s" % post_id)
             return
 
-        params = dict(title = post.subject, body = post.content, user = self.user)
+        params = dict(post = post, user = self.user)
         render(self.response, "newpost.html", **params)
 
     def post(self, post_id):

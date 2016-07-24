@@ -1,12 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <section class="recent-posts">
-    <h2>Recent Posts</h2>
-
-    {% if user %}
-    <p><a href="/newpost">Create a new post</a></p>
-    {% endif %}
+  <section class="user-posts">
+    <h2>Posts by {{user_name}}</h2>
 
     {% for p in posts %}
       {% if not limit %}

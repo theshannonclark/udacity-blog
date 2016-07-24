@@ -50,11 +50,11 @@ class Post(db.Model):
     creator = db.ReferenceProperty(User, required = True)
     last_modified = db.DateTimeProperty(auto_now = True)
 
-    def render(self, template_path = "post.html"):
+    def render(self, template_path = "post.html", user_name = None):
         self._render_text = self.content.replace('\n', "<br/>")
-        return render_str(template_path, p = self)
+        return render_str(template_path, p = self, user_name = user_name)
 
-    def render_excerpt(self, limit = -1):
+    def render_excerpt(self, limit = -1, user_name = None):
         if limit > -1:
             self._excerpt = self.content
             break_index = self._excerpt.find("\n")
@@ -63,7 +63,7 @@ class Post(db.Model):
             self._excerpt = (self._excerpt[:limit]) if len(self._excerpt) > limit else self._excerpt
             self._excerpt = self._excerpt.strip()
             self._excerpt += "..." if not re.compile(".+\.$").match(self._excerpt) else ".."
-        return self.render("postexcerpt.html")
+        return self.render("postexcerpt.html",  user_name = user_name)
 
     def permalink(self):
         return "/%s" % self.key().id()

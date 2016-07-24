@@ -5,12 +5,26 @@
 <span>{{edit_error}}</span><br/>
 <form method="post">
   <label for="subject">Subject: </label>
-  <input type="text" id="subject" name="subject" value="{{title}}" required/><br/>
+  {% if post %}
+  <input type="text" id="subject" name="subject" value="{{post.subject}}" required/><br/>
+  {% else %}
+  <input type="text" id="subject" name="subject" value="" required/><br/>
+  {% endif %}
 
   <label for="content">Content: </label>
-  <textarea name="content" id="content" required>{{body}}</textarea><br/>
+  <textarea name="content" id="content" required>
+  	{% if post %}
+  	  {{post.content}}
+  	{% endif %}
+  </textarea><br/>
 
   <input type="submit" value="post"/>
+
+  {% if post %}
+  <a href="{{post.permalink()}}">Cancel</a>
+  {% else %}
+  <a href="/">Cancel</a>
+  {% endif %}
 </form>
 
 {% endblock %}
