@@ -1,0 +1,15 @@
+<article class="post">
+  <header class="post-heading">
+    <h3 class="post-title">
+      <a href="{{ p.permalink() }}">{{ p.subject }}</a>
+    </h3>
+
+    <p class="post-details">
+      Published {{ p.created.strftime("%b %d, %Y") }} by {{ p.creator.name }} 
+    </p>
+  </header>
+
+  <section class="post-content">
+    {{ p._excerpt | safe }}
+  </section>
+</article>

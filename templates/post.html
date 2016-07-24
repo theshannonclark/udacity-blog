@@ -1,19 +1,13 @@
 <article class="post">
   <header class="post-heading">
-    <h3 class="post-title">
-      <a href="{{ p.permalink() }}">{{ p.subject }}</a>
-    </h3>
+    <h2 class="post-title full-post">{{ p.subject }}</a></h2>
 
-    <p class="post-details">
+    <p class="post-details full-post">
       Published {{ p.created.strftime("%b %d, %Y") }} by {{ p.creator.name }} 
     </p>
   </header>
 
-  <section class="post-content">
-    {% if p._excerpt %}
-      {{ p._excerpt | safe }}
-    {% else %}
-    	{{ p._render_text | safe }}
-    {% endif %}
+  <section class="post-content full-post">
+    {{ p._render_text | safe }}
   </section>
 </article>
