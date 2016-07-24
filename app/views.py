@@ -54,7 +54,6 @@ class UserPostsHandler(Handler):
         posts = []
         if len(user) == 1:
             user = user[0]
-            logging.error(user.key())
             posts = Post.all().filter("creator =", user.key()).order('-created')
         render(self.response, "userposts.html", posts = posts, limit = 500, user = self.user, user_name = user_name)
 
