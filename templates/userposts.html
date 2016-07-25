@@ -4,12 +4,16 @@
   <section class="user-posts">
     <h2>Posts by {{user_name}}</h2>
 
-    {% for p in posts %}
-      {% if not limit %}
-        {{ p.render(user_name = user.name) | safe }}
-      {% else %}
-        {{ p.render_excerpt(limit, user_name = user.name) | safe }}
-      {% endif %}
-    {% endfor %}
+    {% if not creator %}
+      <p class="error user-post-error">There is no user by that name</p>
+    {% else %}
+      {% for p in creator.post_set %}
+        {% if not limit %}
+          {{ p.render(user_name = user.name) | safe }}
+        {% else %}
+          {{ p.render_excerpt(limit, user_name = user.name) | safe }}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
   </section>
 {% endblock %}

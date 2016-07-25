@@ -50,12 +50,9 @@ class MainHandler(Handler):
 
 class UserPostsHandler(Handler):
     def get(self, user_name):
-        user = User.all().filter("name = ", user_name).fetch(limit=1)
-        posts = []
-        if len(user) == 1:
-            user = user[0]
-            posts = Post.all().filter("creator =", user.key()).order('-created')
-        render(self.response, "userposts.html", posts = posts, limit = 500, user = self.user, user_name = user_name)
+        creator = User.all().filter("name = ", user_name).get()
+
+        render(self.response, "userposts.html", limit = 500, user = self.user, creator = creator, user_name = user_name)
 
 
 # Handler class for the login/signup page

@@ -139,6 +139,11 @@ main.content {
     margin: 0.5em auto;
 }
 
+.user-posts,
+.user-post-error {
+    margin-top: 5%;
+}
+
 /* Tabs */
 
 input[type="radio"] {
