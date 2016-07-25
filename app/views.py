@@ -165,7 +165,7 @@ class LogoutHandler(Handler):
 
 # Handler class for the post permalink page
 
-class PostHandler(Handler):
+class PermalinkHandler(Handler):
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id), parent = blog_key())
         post = db.get(key)
@@ -176,22 +176,93 @@ class PostHandler(Handler):
 
         render(self.response, "permalink.html", post = post, user = self.user)
 
+# Base class for post handlers
+
+class PostHandler(Handler):
+    def post(self):
+        self.have_error = False
+
+        self.subject = self.request.get("subject")
+        self.content = self.request.get("content")
+        self.category = self.request.get('category')
+
+        self.params = dict(post_subject = self.subject, post_category = self.category, post_content = self.content, user = self.user)
+
+        if not (self.subject and self.content):
+            self.have_error = True
+            self.params["edit_error"] = "Subject and content required"
+
+        if not (self.valid_text(self.subject) and self.valid_text(self.content)):
+            self.have_error = True
+            self.params["edit_error"] = "Text only, please"
+
+        if self.category and (not self.valid_category(self.category)):
+            self.have_error = True
+            self.params["category_error"] = "Category names should consist of all lowercase letters"
+
+    def valid_text(self, text):
+        # Make sure it isn't just random garbage binary
+        return re.compile("^.+$", re.DOTALL).match(text)
+
+    def valid_category(self, category):
+        # Category names must consist of lowercase letters
+        return re.compile("^[a-z]+$").match(category)
+
+    def assert_logged_in(self, redirect_to = "/"):
+        if not self.user:
+            self.redirect(redirect_to)
+            return False
+        return True
+
+    def assert_can_modify_post(self, post):
+        if not post:
+            self.redirect("/")
+            return False
+        if post.creator.name != self.user.name:
+            self.redirect(post.permalink())
+            return False
+        return True
+
+# Handler class for adding a new blog post
+
+class NewPostHandler(PostHandler):
+    def get(self):
+        if not self.assert_logged_in():
+            return
+        render(self.response, "newpost.html", user = self.user)
+
+    def post(self):
+        if not self.assert_logged_in():
+            return
+
+        super(NewPostHandler, self).post()
+
+        if self.have_error:
+            render(self.response, "newpost.html", **self.params)
+        else:
+            post = Post(
+                parent = blog_key(),
+                subject = self.subject,
+                content = self.content,
+                creator = self.user
+            )
+            if self.category:
+                post.category = self.category
+            post.put()
+
+            self.redirect(post.permalink())
+
 # Handler class for editing a blog post
 
-class EditPostHandler(Handler):
+class EditPostHandler(PostHandler):
     def get(self, post_id):
-        if not self.user:
-            self.redirect("/%s" % post_id)
+        if not self.assert_logged_in("/%s" % post_id):
             return
 
         key = db.Key.from_path('Post', int(post_id), parent = blog_key())
         post = db.get(key)
-        if not post:
-            self.redirect("/")
-            return
 
-        if post.creator.name != self.user.name:
-            self.redirect("/%s" % post_id)
+        if not self.assert_can_modify_post(post):
             return
 
         params = dict(
@@ -203,99 +274,44 @@ class EditPostHandler(Handler):
         render(self.response, "newpost.html", **params)
 
     def post(self, post_id):
-        if not self.user:
-            self.redirect("/%s" % post_id)
+        if not self.assert_logged_in("/%s" % post_id):
             return
 
         key = db.Key.from_path('Post', int(post_id), parent = blog_key())
         post = db.get(key)
-        if not post:
-            self.redirect("/")
+
+        if not self.assert_can_modify_post(post):
             return
 
-        if post.creator.name != self.user.name:
-            self.redirect("/%s" % post_id)
-            return
+        super(EditPostHandler, self).post()
 
-        have_error = False
-
-        title = self.request.get("subject")
-        content = self.request.get("content")
-        category = self.request.get('category')
-
-        params = dict(title = post.subject, body = post.content, user = self.user)
-
-        if not (title and content):
-            have_error = True
-            params["edit_error"] = "Subject and content required"
-
-        if not (self.valid_text(title) and self.valid_text(content)):
-            have_error = True
-            params["edit_error"] = "Text only, please"
-
-        if have_error:
-            render(self.response, "newpost.html", **params)
+        if self.have_error:
+            render(self.response, "newpost.html", **self.params)
         else:
-            post.subject = title
-            post.content = content
-            if category:
-                post.category = category
+            post.subject = self.subject
+            post.content = self.content
+            if self.category:
+                post.category = self.category
 
             post.put()
 
-            self.redirect("/%s" % post_id)
-
-    def valid_text(self, text):
-        return re.compile("^.+$", re.DOTALL).match(text)
+            self.redirect(post.permalink())
 
 # Handler class for deleting a blog post
 
-class DeletePostHandler(Handler):
+class DeletePostHandler(PostHandler):
     def get(self, post_id):
-        if not self.user:
-            self.redirect("/%s" % post_id)
+        if not self.assert_logged_in("/%s" % post_id):
             return
 
         key = db.Key.from_path('Post', int(post_id), parent = blog_key())
         post = db.get(key)
-        if not post:
-            self.redirect("/")
+
+        if not self.assert_can_modify_post(post):
             return
 
-        if post.creator.name != self.user.name:
-            self.redirect("/%s" % post_id)
-        else:
-            db.delete(post)
-            self.redirect("/")
-
-# Handler class for adding a new blog post
-
-class NewPostHandler(Handler):
-    def get(self):
-        render(self.response, "newpost.html", user = self.user)
+        db.delete(post)
+        self.redirect("/")
 
     def post(self):
-        subject = self.request.get('subject')
-        content = self.request.get('content')
-        category = self.request.get('category')
-
-        if subject and content:
-            p = Post(
-                parent = blog_key(),
-                subject = subject,
-                content = content,
-                creator = self.user
-            )
-            if category:
-                p.category = category
-            p.put()
-            self.redirect("/%s" % str(p.key().id()))
-        else:
-            error = "Subject and content, please!"
-            render(self.response, "newpost.html", subject = subject, content = content, error = error, user = self.user)
-
-    # Only logged in users can post
-    def initialize(self, *a, **kw):
-        super(NewPostHandler, self).initialize(*a, **kw)
-        if not self.user:
-            self.redirect("/auth")
+        self.error(405)

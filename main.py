@@ -22,7 +22,7 @@ app = webapp2.WSGIApplication([
 	("/", MainHandler),
 	("/auth", AuthHandler),
 	("/logout", LogoutHandler),
-	("/([0-9]*)", PostHandler),
+	("/([0-9]*)", PermalinkHandler),
 	("/([0-9]*)/edit", EditPostHandler),
 	("/([0-9]*)/delete", DeletePostHandler),
 	("/user/([a-zA-Z0-9]+)", UserPostsHandler),
