@@ -47,6 +47,7 @@ class User(db.Model):
         return "/user/%s" % self.name
 
 class Post(db.Model):
+    category = db.StringProperty(required = True, default = "default")
     subject = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
@@ -70,3 +71,6 @@ class Post(db.Model):
 
     def permalink(self):
         return "/%s" % self.key().id()
+
+    def category_url(self):
+        return "/category/%s" % self.category

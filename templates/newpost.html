@@ -2,21 +2,17 @@
 
 {% block content %}
 
-<span>{{edit_error}}</span><br/>
 <form method="post">
+  <span>{{edit_error}}</span><br/>
+
   <label for="subject">Subject: </label>
-  {% if post %}
-  <input type="text" id="subject" name="subject" value="{{post.subject}}" required/><br/>
-  {% else %}
-  <input type="text" id="subject" name="subject" value="" required/><br/>
-  {% endif %}
+  <input type="text" id="subject" name="subject" value="{{post_subject}}" required/><br/>
+
+  <label for="category">Category (optional): </label>
+  <input type="text" id="category" name="category" value="{{post_category}}"/><br/>
 
   <label for="content">Content: </label>
-  <textarea name="content" id="content" required>
-  	{% if post %}
-  	  {{post.content}}
-  	{% endif %}
-  </textarea><br/>
+  <textarea name="content" id="content" required>{{post_content}}</textarea><br/>
 
   <input type="submit" value="post"/>
 

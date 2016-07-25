@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="category-posts">
+    <h2>Posts in {{category}}</h2>
+
+    {% for p in posts %}
+      {% if not limit %}
+        {{ p.render(user_name = user.name) | safe }}
+      {% else %}
+        {{ p.render_excerpt(limit, user_name = user.name) | safe }}
+      {% endif %}
+    {% endfor %}
+  </section>
+{% endblock %}

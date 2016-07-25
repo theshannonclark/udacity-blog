@@ -50,10 +50,17 @@ class MainHandler(Handler):
 
 class UserPostsHandler(Handler):
     def get(self, user_name):
-        creator = User.all().filter("name = ", user_name).get()
+        creator = User.by_name(user_name)
 
         render(self.response, "userposts.html", limit = 500, user = self.user, creator = creator, user_name = user_name)
 
+# Page to display posts in the specified category
+
+class CategoryHandler(Handler):
+    def get(self, category):
+        posts = Post.all().filter("category =", category)
+
+        render(self.response, "categoryposts.html", posts = posts, limit = 500, user = self.user, category = category)
 
 # Handler class for the login/signup page
 
@@ -187,7 +194,12 @@ class EditPostHandler(Handler):
             self.redirect("/%s" % post_id)
             return
 
-        params = dict(post = post, user = self.user)
+        params = dict(
+            post_subject = post.subject,
+            post_category = post.category,
+            post_content = post.content,
+            user = self.user
+        )
         render(self.response, "newpost.html", **params)
 
     def post(self, post_id):
@@ -209,6 +221,7 @@ class EditPostHandler(Handler):
 
         title = self.request.get("subject")
         content = self.request.get("content")
+        category = self.request.get('category')
 
         params = dict(title = post.subject, body = post.content, user = self.user)
 
@@ -225,6 +238,8 @@ class EditPostHandler(Handler):
         else:
             post.subject = title
             post.content = content
+            if category:
+                post.category = category
 
             post.put()
 
@@ -262,6 +277,7 @@ class NewPostHandler(Handler):
     def post(self):
         subject = self.request.get('subject')
         content = self.request.get('content')
+        category = self.request.get('category')
 
         if subject and content:
             p = Post(
@@ -270,6 +286,8 @@ class NewPostHandler(Handler):
                 content = content,
                 creator = self.user
             )
+            if category:
+                p.category = category
             p.put()
             self.redirect("/%s" % str(p.key().id()))
         else:

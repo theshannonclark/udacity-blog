@@ -140,7 +140,8 @@ main.content {
 }
 
 .user-posts,
-.user-post-error {
+.user-post-error,
+.category-posts {
     margin-top: 5%;
 }
 
